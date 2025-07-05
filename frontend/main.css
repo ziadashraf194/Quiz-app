@@ -1,0 +1,242 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Tahoma, Arial;
+    margin: 0;
+    padding: 0;
+    background-color: #eee;
+  }
+  
+  .quiz-app {
+    margin: 20px auto;
+    width: 800px;
+    max-width: 100%;
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  
+  .quiz-app .quiz-info {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #fff;
+    padding: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .quiz-app .quiz-info .category,
+  .quiz-app .quiz-info .count,
+  .quiz-app .quiz-info .countdown {
+    flex: 1;
+    margin: 5px 0;
+  }
+  
+  .quiz-app .quiz-info .count {
+    text-align: right;
+  }
+  
+  .quiz-app .quiz-info .countdown {
+    text-align: center;
+    font-weight: bold;
+    color: #ad0000;
+    font-size: 16px;
+  }
+  
+  .quiz-app .quiz-area {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 15px;
+  }
+  
+  .quiz-app .quiz-area h2 {
+    margin: 0;
+  }
+  
+  .quiz-app .answers-area {
+    background-color: #fff;
+    padding: 0 20px 20px;
+  }
+  
+  .quiz-app .answers-area .answer {
+    background-color: #f9f9f9;
+    padding: 15px;
+  }
+  
+  .quiz-app .answers-area .answer:not(:last-child) {
+    border-bottom: 1px solid #dfdfdf;
+  }
+  
+  .quiz-app .answers-area .answer input[type="Radio"]:checked + label {
+    color: #0075ff;
+  }
+  
+  .quiz-app .answers-area .answer label {
+    cursor: pointer;
+    font-weight: bold;
+    color: #777;
+    font-size: 14px;
+    margin-left: 5px;
+    position: relative;
+    top: -1px;
+  }
+  
+  /* أزرار التنقل */
+  .quiz-app .button-controls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .quiz-app .button-controls button {
+    flex: 1;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .quiz-app .prev-button {
+    background-color: #999;
+    color: #fff;
+  }
+  .quiz-app .prev-button:hover {
+    background-color: #777;
+  }
+  
+  .quiz-app .submit-button {
+    background-color: #0075ff;
+    color: #fff;
+  }
+  .quiz-app .submit-button:hover {
+    background-color: #005cc5;
+  }
+  
+  .quiz-app .bullets {
+    border-top: 1px solid #dfdfdf;
+    background-color: #fff;
+    display: flex;
+    padding: 20px;
+  }
+  
+  .quiz-app .bullets .spans {
+    flex: 1;
+    display: flex;
+  }
+  
+  .quiz-app .bullets .spans span {
+    width: 20px;
+    height: 20px;
+    background-color: #ddd;
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+  
+  .quiz-app .bullets .spans span.on {
+    background-color: #0075ff;
+  }
+  
+  .quiz-app .results span {
+    font-weight: bold;
+  }
+  
+  .quiz-app .results span.bad {
+    color: #ba0000;
+    
+  }
+  
+  .quiz-app .results span.good {
+    color: #02f236;
+  }
+  
+  .quiz-app .results span.perfect {
+    color: #0075ff;
+  }
+  .quiz-app .start-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    background-color: #fff;
+    border-radius: 10px;
+   
+  }
+  
+  .quiz-app .start-button {
+    background-color: #0075ff;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+   margin-left: 40%;
+  }
+  
+  .quiz-app .start-button:hover {
+    background-color: #005cc5;
+  }
+  .bullets .spans span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    background-color: #ddd;
+    margin-right: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+  
+  .bullets .spans span.on {
+    background-color: #0075ff;
+  }
+  
+  .bullets .spans span {
+    width: 28px;
+    height: 28px;
+    margin: 5px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .bullets .spans span.on {
+    background-color: #0075ff;
+    color: #fff;
+  }
+  
+  .bullets .spans span.answered {
+    background-color: #5cb3ff;
+    color: #fff;
+  }
+  
+  .bullets .spans span.skipped {
+    background-color: #e74c3c;
+    color: #fff;
+  }
+  .bullets .spans span.on {
+    background-color: #0075ff !important;
+    color: #fff;
+  }
+  .bullets .spans span.on {
+    background-color: #0075ff !important;
+    color: #fff;
+  }
+ 

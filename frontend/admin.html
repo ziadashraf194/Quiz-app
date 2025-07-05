@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة الإدارة</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <style>
+.question-item.dragging {
+  opacity: 0.3;
+  border: 2px dashed #aaa;
+}
+
+.drop-placeholder {
+  height: 50px;
+  background: #eee;
+  border: 2px dashed #999;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
+  </style>
+  <div class="admin-panel">
+    
+    <h3>✏️ تعديل: <span id="examTitle">اسم الاختبار</span></h3>
+
+
+  
+
+    <hr>
+   
+    <label>⏱️ المدة (دقائق):</label>
+    <input type="number" id="duration" min="1"><br>
+    <label>📢 إظهار المراجعة للطالب بعد الانتهاء:</label>
+    <select id="showAnswers">
+      <option value="true">نعم</option>
+      <option value="false">لا</option>
+    </select>
+
+    <input type="text" id="title" placeholder="عنوان السؤال"><br>
+    <input type="text" id="answer1" placeholder="الاختيار 1"><br>
+    <input type="text" id="answer2" placeholder="الاختيار 2"><br>
+    <input type="text" id="answer3" placeholder="الاختيار 3"><br>
+    <input type="text" id="answer4" placeholder="الاختيار 4"><br>
+    <select id="right_answer">
+      <option disabled selected>✔️ اختر الإجابة الصحيحة</option>
+      <option value="answer_1">الاختيار 1</option>
+      <option value="answer_2">الاختيار 2</option>
+      <option value="answer_3">الاختيار 3</option>
+      <option value="answer_4">الاختيار 4</option>
+    </select>
+    <input type="number" id="score" placeholder="درجة هذا السؤال" min="1" value="1" />
+
+    <br><br>
+
+    <!-- زر إضافة السؤال -->
+<button onclick="addQuestion()">➕ إضافة السؤال</button>
+<button onclick="saveCurrentExam()">💾 حفظ التعديلات</button>
+<!-- ✅ معاينة جميع الأسئلة بصيغة JSON -->
+
+
+<h4>🧾 الأسئلة المضافة:</h4>
+<ul id="questionList" style="list-style: none; padding: 0;"></ul>
+
+
+
+<!-- ✅ ملخص الأسئلة والدرجات -->
+<div id="summary" style="margin-top: 20px; background: #eef; padding: 10px;"></div>
+
+
+
+
+    <hr>
+    <pre id="preview"></pre>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
