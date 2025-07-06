@@ -43,7 +43,7 @@
   </style>
 </head>
 <body>
-  
+
   <h2>📊 نتائج الاختبار</h2>
 
   <table>
@@ -62,14 +62,16 @@
 
   <script>
     const examId = new URLSearchParams(window.location.search).get("exam");
+
+    // عرض عنوان الامتحان
     fetch(`/exams/${examId}`)
-  .then(res => res.json())
-  .then(examData => {
-    const examTitle = examData[0]?.title || `اختبار رقم ${examId}`;
-    document.querySelector("h2").textContent = `📊 نتائج: ${examTitle}`;
-  });
+      .then(res => res.json())
+      .then(examData => {
+        const examTitle = examData[0]?.title || `اختبار رقم ${examId}`;
+        document.querySelector("h2").textContent = `📊 نتائج: ${examTitle}`;
+      });
 
-
+    // تحميل وعرض النتائج
     fetch(`/results/${examId}`)
       .then(res => res.ok ? res.json() : [])
       .then(data => {
@@ -80,6 +82,18 @@
           tbody.innerHTML = `<tr><td colspan="4">لا توجد نتائج لهذا الاختبار</td></tr>`;
           return;
         }
+
+        // ترتيب النتائج حسب الدرجة ثم أقل مدة
+        data.sort((a, b) => {
+          if (b.score !== a.score) {
+            return b.score - a.score; // الأعلى درجة أولًا
+          }
+
+          const aTime = parseDuration(a.duration_display || formatTime(a.duration_seconds));
+          const bTime = parseDuration(b.duration_display || formatTime(b.duration_seconds));
+
+          return aTime - bTime; // الأقل وقتًا أولًا
+        });
 
         data.forEach((result, index) => {
           const row = document.createElement("tr");
@@ -97,13 +111,63 @@
           `<tr><td colspan="4">⚠️ فشل في تحميل النتائج</td></tr>`;
       });
 
+    // تنسيق الوقت من ثواني إلى "دقيقة و ثانية"
     function formatTime(seconds) {
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       return `${m} دقيقة و ${s} ثانية`;
     }
 
-  
+    // تحويل الوقت كنص إلى عدد ثوانٍ للمقارنة
+    function parseDuration(str) {
+      const minMatch = str.match(/(\d+)\s*دقيقة/);
+      const secMatch = str.match(/(\d+)\s*ثانية/);
+
+      const min = minMatch ? parseInt(minMatch[1]) : 0;
+      const sec = secMatch ? parseInt(secMatch[1]) : 0;
+
+      return min * 60 + sec;
+    }
+
+    function loadResults() {
+  const examId = new URLSearchParams(window.location.search).get("exam");
+  fetch(`/results/${examId}`)
+    .then(res => res.json())
+    .then(data => {
+      // ترتيب حسب الدرجة ثم الوقت المستغرق
+      data.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+
+        // لو متساويين في الدرجة، نقارن حسب duration_display
+        const t1 = parseDurationToSeconds(a.duration_display);
+        const t2 = parseDurationToSeconds(b.duration_display);
+        return t1 - t2;
+      });
+
+      const container = document.getElementById("resultsList");
+      container.innerHTML = "";
+
+      data.forEach((res, i) => {
+        const item = document.createElement("div");
+        item.innerHTML = `
+          <strong>🏅 ${i + 1}) ${res.name}</strong> - الدرجة: ${res.score} - ⏱️ الزمن: ${res.duration_display}
+        `;
+        container.appendChild(item);
+      });
+    });
+}
+
+// دالة تحويل "2 دقيقة و 15 ثانية" → 135 ثانية
+function parseDurationToSeconds(text) {
+  const minutesMatch = text.match(/(\d+)\s*دقيقة/);
+  const secondsMatch = text.match(/(\d+)\s*ثانية/);
+
+  const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+  const seconds = secondsMatch ? parseInt(secondsMatch[1]) : 0;
+
+  return minutes * 60 + seconds;
+}
+
 
   </script>
 </body>

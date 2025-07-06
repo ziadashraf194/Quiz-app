@@ -1,55 +1,59 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تطبيق الاختبار</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>نظام الامتحانات</title>
   <link rel="stylesheet" href="main.css" />
 </head>
 <body>
 
   <div class="quiz-app">
 
-    <!-- نافذة إدخال الاسم -->
-    <div class="name-popup" id="namePopup" style="display: none; flex-direction: column; align-items: center; gap: 10px; padding: 20px; border: 1px solid #ccc; width: 300px; margin: 100px auto; background: #fff;
-    justify-content: center;">
-      <h3>✍️ أدخل اسمك للبدء</h3>
-      <input type="text" id="studentNameInput" placeholder="اسم الطالب" style="width: 100%; padding: 8px;" />
-      <button id="submitNameBtn" style="padding: 8px 16px; display: flex; align-items: center;justify-content: center;" >ابدأ الاختبار</button>
+    <!-- شاشة البداية -->
+    <div class="start-screen" id="startScreen" style="display: none;">
+      <button id="startButton" class="start-button" style="display: none;">ابدأ الامتحان</button>
+
     </div>
 
-    <!-- شاشة البداية -->
-    <div class="start-screen" style="display: none;">
-      <button class="start-button">ابدأ الاختبار</button>
+    <!-- نافذة إدخال الاسم -->
+    <div class="popup" id="namePopup" style="text-align:center; padding:20px;">
+      <h3>أدخل اسمك للبدء</h3>
+      <input type="text" id="studentNameInput" placeholder="اسم الطالب" />
+      <br><br>
+      <button id="submitNameBtn" class="start-button">ابدأ</button>
     </div>
 
     <!-- معلومات الامتحان -->
-    <div class="quiz-info" style="display: none;">
-      <div class="category">الفئة: <span>HTML</span></div>
-      <div class="count">عدد الأسئلة: <span>0</span></div>
-      <div class="countdown">00:00</div>
+    <div class="quiz-info" id="quizInfo" style="display: none;">
+      <div class="category"><strong id="examTitle">عنوان الامتحان</strong></div>
+      <div class="count">عدد الأسئلة: <span id="countSpan">0</span></div>
+      <div class="countdown">الوقت: <span id="countdownElement">00:00</span></div>
     </div>
 
-    <!-- محتوى السؤال والاختيارات -->
-    <div class="quiz-area" style="display: none;"></div>
-    <div class="answers-area" style="display: none;"></div>
+    <!-- السؤال -->
+    <div class="quiz-area" id="quizArea" style="display: none;"></div>
+
+    <!-- الاختيارات -->
+    <div class="answers-area" id="answersArea" style="display: none;"></div>
 
     <!-- أزرار التنقل -->
-    <div class="button-controls" style="display: none;">
-      <button class="prev-button">السابق</button>
-      <button class="submit-button">التالي</button>
+    <div class="button-controls" id="buttonControls" style="display: none;">
+      <button class="prev-button" id="prevButton">السابق</button>
+      <button class="submit-button" id="submitButton">التالي</button>
     </div>
 
-    <!-- رصاصات الأسئلة -->
-    <div class="bullets" style="display: none;">
-      <div class="spans"></div>
+    <!-- الرصاصات -->
+    <div class="bullets" id="bullets" style="display: none;">
+      <div class="spans" id="bulletsSpanContainer"></div>
     </div>
 
     <!-- النتيجة -->
-    <div class="results"></div>
+    <div class="results" id="resultsContainer"></div>
 
   </div>
 
-  <script src="main.js"></script>
+  <!-- سكربت التطبيق -->
+  <script src="js/main.js"></script>
 </body>
 </html>

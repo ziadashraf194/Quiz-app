@@ -1,103 +1,97 @@
+// تحميل متغيرات البيئة
+require("dotenv").config();
+
+// تحميل المكتبات المطلوبة
 const express = require("express");
-const session = require("express-session");
-const fs = require("fs");
+const mongoose = require("mongoose");
+const cors = require("cors");
 const path = require("path");
 
+// تحميل النماذج
+const Exam = require("./models/Exam");
+const Result = require("./models/Result");
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+// الوسيطات (middlewares)
+app.use(cors());
 app.use(express.json());
+app.use(express.static("frontend")); // لتقديم ملفات HTML + JS + CSS
 
-// ✅ إعداد الجلسة
-app.use(session({
-  secret: "admin-session-secret", // غيّرها في مشروعك الحقيقي
-  resave: false,
-  saveUninitialized: false
-}));
+// الاتصال بقاعدة البيانات
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ تم الاتصال بـ MongoDB"))
+  .catch((err) => console.error("❌ فشل الاتصال:", err));
 
-// ✅ بيانات تسجيل الدخول
-const ADMIN = { username: "admin", password: "1234" };
-
-// ✅ مسار تسجيل الدخول
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  if (username === ADMIN.username && password === ADMIN.password) {
-    req.session.isAdmin = true;
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
+// 🔹 جلب جميع الامتحانات
+app.get("/exams", async (req, res) => {
+  const exams = await Exam.find().sort({ created_at: -1 });
+  res.json(exams);
 });
 
-// ✅ حماية الصفحات (يوضع قبل الملفات الثابتة)
-app.use((req, res, next) => {
-  const isPublic =
-    req.path === "/" ||
-    req.path === "/index.html" ||
-    req.path === "/login.html" ||
-    req.path === "/login";
-
-  const isStatic = /\.(css|js|png|jpg|jpeg|ico|woff2?)$/.test(req.path);
-
-  if (req.session.isAdmin || isPublic || isStatic) {
-    return next();
-  }
-
-  // ❌ محاولة دخول صفحة غير مصرح بها
-  return res.sendFile(path.join(__dirname, "frontend", "404.html"));
-});
-
-// ✅ تقديم الملفات الثابتة
-app.use(express.static("frontend"));
-
-// ✅ حذف امتحان + نتيجته
-app.delete("/exams/:id", (req, res) => {
-  const id = req.params.id;
-  const examPath = path.join(__dirname, "exams", `${id}.json`);
-  const resultPath = path.join(__dirname, "results", `${id}.json`);
-  let deleted = [];
-
+// 🔹 جلب امتحان بشكل JSON متوافق مع الواجهة
+app.get("/exams/:id", async (req, res) => {
   try {
-    if (fs.existsSync(examPath)) {
-      fs.unlinkSync(examPath);
-      deleted.push(`exams/${id}.json`);
-    }
+    const exam = await Exam.findById(req.params.id);
+    if (!exam) return res.status(404).json({ error: "❌ الامتحان غير موجود" });
 
-    if (fs.existsSync(resultPath)) {
-      fs.unlinkSync(resultPath);
-      deleted.push(`results/${id}.json`);
-    }
+    // ✅ تنسيقه كـ Array:
+    const meta = {
+      title: exam.title,
+      duration_minutes: exam.duration_minutes,
+      show_answers: exam.show_answers,
+    };
 
-    if (deleted.length === 0) {
-      return res.status(404).json({ message: "⚠️ لا توجد ملفات بهذا الاسم." });
-    }
-
-    res.json({ message: `✅ تم حذف: \n${deleted.join("\n")}` });
+    res.json([meta, ...exam.questions]);
   } catch (err) {
-    console.error("❌ خطأ أثناء الحذف:", err.message);
-    res.status(500).json({ error: "حدث خطأ أثناء الحذف." });
+    res.status(400).json({ error: "❌ معرّف غير صالح" });
   }
 });
 
-// ✅ حذف ملف النتائج فقط
-app.delete("/results/:id", (req, res) => {
-  const id = req.params.id;
-  const resultPath = path.join(__dirname, "results", `${id}.json`);
+// 🔹 إنشاء امتحان جديد
+app.post("/exams/create", async (req, res) => {
+  const exam = await Exam.create({ title: "اختبار جديد" });
+  res.json({ message: "✅ تم الإنشاء", exam });
+});
 
+// 🔹 تعديل امتحان (بما في ذلك الأسئلة)
+app.post("/exams/:id", async (req, res) => {
   try {
-    if (fs.existsSync(resultPath)) {
-      fs.unlinkSync(resultPath);
-      res.json({ message: `✅ تم حذف ملف النتائج للامتحان ${id}.` });
-    } else {
-      res.status(404).json({ error: "⚠️ ملف النتائج غير موجود." });
-    }
+    await Exam.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ message: "✅ تم الحفظ" });
   } catch (err) {
-    console.error("❌ خطأ أثناء حذف النتائج:", err.message);
-    res.status(500).json({ error: "فشل في حذف النتائج." });
+    res.status(500).json({ error: "❌ فشل في الحفظ", details: err.message });
   }
+});
+
+// 🔹 حذف امتحان
+app.delete("/exams/:id", async (req, res) => {
+  await Exam.findByIdAndDelete(req.params.id);
+  res.json({ message: "🗑️ تم حذف الامتحان" });
+});
+
+// 🔹 حفظ نتيجة طالب
+app.post("/results/:id", async (req, res) => {
+  try {
+    const result = await Result.create({
+      exam_id: req.params.id,
+      ...req.body,
+    });
+    res.json({ message: "✅ تم حفظ النتيجة", result });
+  } catch (err) {
+    res.status(500).json({ error: "❌ فشل في حفظ النتيجة", details: err.message });
+  }
+});
+
+// 🔹 جلب نتائج امتحان معين
+app.get("/results/:id", async (req, res) => {
+  const results = await Result.find({ exam_id: req.params.id }).sort({ created_at: -1 });
+  res.json(results);
 });
 
 // ✅ تشغيل السيرفر
 app.listen(PORT, () => {
-  console.log(`🚀 السيرفر يعمل على: http://localhost:${PORT}`);
+  console.log(`🚀 السيرفر شغال على: http://localhost:${PORT}`);
 });
