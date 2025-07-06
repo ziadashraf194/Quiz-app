@@ -21,7 +21,7 @@ app.use(express.static("frontend")); // لتقديم ملفات HTML + JS + CSS
 
 // الاتصال بقاعدة البيانات
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect("MONGO_URI=mongodb+srv://ziad1942007:ziad1942007@cluster0.ibid538.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => console.log("✅ تم الاتصال بـ MongoDB"))
   .catch((err) => console.error("❌ فشل الاتصال:", err));
 
